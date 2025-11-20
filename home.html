@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Select Test - TestApp</title>
+<style>
+body { font-family: Arial; margin: 30px; }
+.test-btn { padding: 15px; display: block; width: 200px; margin: 10px 0; cursor: pointer; }
+</style>
+</head>
+<body>
+<h1>Select Your Test</h1>
+<button class="test-btn" onclick="startTest('test1.html')">Test 1</button>
+<button class="test-btn" onclick="startTest('test2.html')">Test 2</button>
+<button class="test-btn" onclick="startTest('test3.html')">Test 3</button>
+
+
+<script>
+function startTest(page) {
+window.location.href = page;
+}
+</script>
+</body>
+</html>
