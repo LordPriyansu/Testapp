@@ -1,3 +1,7 @@
+/* ===========================================
+      SCRIPT.JS — FINAL CLEAN VERSION
+=========================================== */
+
 // ========== CREATE TEST ==========
 function createTest(){
  let name = document.getElementById("testName").value.trim();
@@ -8,10 +12,10 @@ function createTest(){
    return;
  }
 
- // save empty test
+ // save empty question array
  localStorage.setItem(name, JSON.stringify([]));
 
- // save timer for this test
+ // save timer for test
  localStorage.setItem(name + "_timer", timer);
 
  alert("Test Created");
@@ -26,12 +30,16 @@ function loadAdminTestList(){
  if(addSelect) addSelect.innerHTML = "";
  if(delSelect) delSelect.innerHTML = "";
 
- for(let k in localStorage){
+ // FIX: Use localStorage.key(i) to avoid length/clear/getItem
+ for(let i = 0; i < localStorage.length; i++){
+   let k = localStorage.key(i);
+
+   // skip result and timer entries
+   if(k === "result") continue;
    if(k.endsWith("_timer")) continue;
-   if(k !== "result"){
-     if(addSelect) addSelect.innerHTML += `<option>${k}</option>`;
-     if(delSelect) delSelect.innerHTML += `<option>${k}</option>`;
-   }
+
+   if(addSelect) addSelect.innerHTML += `<option>${k}</option>`;
+   if(delSelect) delSelect.innerHTML += `<option>${k}</option>`;
  }
 }
 
@@ -41,8 +49,8 @@ function deleteTest(){
  if(!t) return;
 
  if(confirm(`Delete test: ${t}?`)){
-   localStorage.removeItem(t);
-   localStorage.removeItem(t + "_timer");
+   localStorage.removeItem(t);         // remove questions
+   localStorage.removeItem(t + "_timer"); // remove timer
    alert("Test Deleted");
    loadAdminTestList();
  }
@@ -71,12 +79,15 @@ function addQuestion(){
 function loadTestList(){
  let div = document.getElementById("testList");
  if(!div) return;
+
  div.innerHTML = "";
 
- for(let k in localStorage){
-   if(!k.endsWith("_timer") && k !== "result"){
-     div.innerHTML += `<button onclick="openTest('${k}')">${k}</button><br>`;
-   }
+ for(let i = 0; i < localStorage.length; i++){
+   let k = localStorage.key(i);
+
+   if(k === "result" || k.endsWith("_timer")) continue;
+
+   div.innerHTML += `<button onclick="openTest('${k}')">${k}</button><br>`;
  }
 }
 
@@ -92,7 +103,6 @@ function loadSelectedTest(){
 
  testTitle.innerHTML = name;
 
- // load test questions
  let data = JSON.parse(localStorage.getItem(name));
  window.questions = data;
 
@@ -114,10 +124,16 @@ function submitTest(){
 
  window.questions.forEach((q,i)=>{
    let sel=document.querySelector(`input[name='q${i}']:checked`);
-   let val = sel?sel.value:"None";
-   if(val===q.ans) score++;
+   let val = sel ? sel.value : "None";
 
-   details.push({ q:q.q, selected:val, ans:q.ans, correct:(val===q.ans) });
+   if(val === q.ans) score++;
+
+   details.push({
+     q:q.q,
+     selected:val,
+     ans:q.ans,
+     correct:(val===q.ans)
+   });
  });
 
  localStorage.setItem("result", JSON.stringify({
@@ -134,7 +150,8 @@ function startTimer(min){
  let t = min * 60;
 
  let x = setInterval(()=>{
-   let m=Math.floor(t/60), s=t%60;
+   let m = Math.floor(t/60);
+   let s = t % 60;
 
    timer.innerHTML = `${m}:${s.toString().padStart(2,'0')}`;
 
@@ -142,6 +159,7 @@ function startTimer(min){
      clearInterval(x);
      submitTest();
    }
+
    t--;
  },1000);
 }
