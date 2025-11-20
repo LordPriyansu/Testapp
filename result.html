@@ -1,36 +1,28 @@
-<html lang="en">
+<!DOCTYPE html>
+<html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Results - TestApp</title>
+<title>Results</title>
 <style>
-body { font-family: Arial; margin: 30px; }
-.wrong { color: red; }
-.correct { color: green; }
+body{font-family:Arial; padding:20px;}
+.correct{color:green;}
+.wrong{color:red;}
 </style>
 </head>
 <body>
-<h1>Your Results</h1>
+<h1>Result</h1>
 <div id="score"></div>
-<div id="answers"></div>
-
-
+<div id="details"></div>
 <script>
-const result = JSON.parse(localStorage.getItem("resultData"));
-
-
-document.getElementById("score").innerHTML = `<h2>Score: ${result.score} / ${result.total}</h2>`;
-
-
-let html = "";
-result.details.forEach((q, i) => {
-html += `<p><b>Q${i+1}: ${q.question}</b><br>`;
-html += `Your answer: <span class='${q.correct ? "correct" : "wrong"}'>${q.selected}</span><br>`;
-html += `Correct answer: <b>${q.answer}</b></p><hr>`;
+let r=JSON.parse(localStorage.getItem("result"));
+score.innerHTML=`<h2>Score: ${r.score}/${r.total}</h2>`;
+let html="";
+r.details.forEach((q,i)=>{
+html+=`<p><b>Q${i+1}: ${q.q}</b><br>
+Your answer: <span class='${q.correct?"correct":"wrong"}'>${q.selected}</span><br>
+Correct: <b>${q.ans}</b></p><hr>`;
 });
-
-
-document.getElementById("answers").innerHTML = html;
+details.innerHTML=html;
 </script>
 </body>
 </html>
