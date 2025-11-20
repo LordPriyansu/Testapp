@@ -1,0 +1,36 @@
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Results - TestApp</title>
+<style>
+body { font-family: Arial; margin: 30px; }
+.wrong { color: red; }
+.correct { color: green; }
+</style>
+</head>
+<body>
+<h1>Your Results</h1>
+<div id="score"></div>
+<div id="answers"></div>
+
+
+<script>
+const result = JSON.parse(localStorage.getItem("resultData"));
+
+
+document.getElementById("score").innerHTML = `<h2>Score: ${result.score} / ${result.total}</h2>`;
+
+
+let html = "";
+result.details.forEach((q, i) => {
+html += `<p><b>Q${i+1}: ${q.question}</b><br>`;
+html += `Your answer: <span class='${q.correct ? "correct" : "wrong"}'>${q.selected}</span><br>`;
+html += `Correct answer: <b>${q.answer}</b></p><hr>`;
+});
+
+
+document.getElementById("answers").innerHTML = html;
+</script>
+</body>
+</html>
