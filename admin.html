@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Admin Panel</title>
+<style>
+body{font-family:Arial; padding:20px;}
+input,textarea,select{width:300px; padding:8px; margin:5px 0;}
+button{padding:10px; margin-top:10px; cursor:pointer;}
+</style>
+</head>
+<body>
+<h1>Admin Panel</h1>
+
+
+<h3>Create New Test</h3>
+<input id="testName" placeholder="Test Name">
+<button onclick="createTest()">Create Test</button>
+
+
+<h3>Add Question</h3>
+<select id="testSelect"></select><br>
+<textarea id="qText" placeholder="Question"></textarea><br>
+<input id="opt1" placeholder="Option 1"><br>
+<input id="opt2" placeholder="Option 2"><br>
+<input id="opt3" placeholder="Option 3"><br>
+<input id="opt4" placeholder="Option 4"><br>
+<input id="correct" placeholder="Correct Answer"><br>
+<button onclick="addQuestion()">Add Question</button>
+
+
+<script src="script.js"></script>
+<script>loadAdminTestList();</script>
+</body>
+</html>
