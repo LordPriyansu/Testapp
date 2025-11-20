@@ -1,4 +1,4 @@
- // ========== CREATE TEST ==========
+// ========== CREATE TEST ==========
 function createTest(){
  let name = document.getElementById("testName").value.trim();
  if(!name){ alert("Enter test name"); return; }
@@ -56,8 +56,8 @@ function openTest(name){
 function loadSelectedTest(){
  let name = localStorage.getItem("selectedTest");
  if(!name) return;
- testTitle.innerHTML = name;
 
+ testTitle.innerHTML = name;
  let data = JSON.parse(localStorage.getItem(name));
  window.questions = data;
 
@@ -87,6 +87,7 @@ function submitTest(){
    total:window.questions.length,
    details:details
  }));
+
  window.location = "result.html";
 }
 
@@ -94,9 +95,15 @@ function submitTest(){
 function startTimer(min){
  let t = min*60;
  let x = setInterval(()=>{
-  let m=Math.floor(t/60), s=t%60;
+  let m=Math.floor(t/60),
+      s=t%60;
   timer.innerHTML = `${m}:${s.toString().padStart(2,'0')}`;
-  if(t<=0){ clearInterval(x); submitTest(); }
+
+  if(t <= 0){
+    clearInterval(x);
+    submitTest();
+  }
+
   t--;
  },1000);
 }
