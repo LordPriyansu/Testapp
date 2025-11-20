@@ -120,31 +120,33 @@ function loadSelectedTest(){
 
 // ========== SUBMIT TEST ==========
 function submitTest(){
- let score=0, details=[];
+ let score = 0, details = [];
 
  window.questions.forEach((q,i)=>{
-   let sel=document.querySelector(`input[name='q${i}']:checked`);
+   let sel = document.querySelector(`input[name='q${i}']:checked`);
    let val = sel ? sel.value : "None";
 
-   if(val === q.ans) score++;
+   if(val === q.ans) score += 1;
+   else if(val !== "None") score -= 0.33;
 
-   details.push({
-     q:q.q,
-     selected:val,
-     ans:q.ans,
-     correct:(val===q.ans)
+   details.push({ 
+     q: q.q, 
+     selected: val, 
+     ans: q.ans, 
+     correct: (val === q.ans) 
    });
  });
 
+ if(score < 0) score = 0;
+
  localStorage.setItem("result", JSON.stringify({
-   score:score,
-   total:window.questions.length,
-   details:details
+   score: score.toFixed(2),
+   total: window.questions.length,
+   details: details
  }));
 
  window.location = "result.html";
 }
-
 // ========== TIMER ==========
 function startTimer(min){
  let t = min * 60;
