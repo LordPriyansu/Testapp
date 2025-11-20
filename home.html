@@ -1,25 +1,19 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Select Test - TestApp</title>
+<title>Select Test</title>
 <style>
-body { font-family: Arial; margin: 30px; }
-.test-btn { padding: 15px; display: block; width: 200px; margin: 10px 0; cursor: pointer; }
+body{font-family:Arial; padding:20px;}
+button{padding:15px; margin:10px; width:200px; cursor:pointer;}
 </style>
 </head>
 <body>
-<h1>Select Your Test</h1>
-<button class="test-btn" onclick="startTest('test1.html')">Test 1</button>
-<button class="test-btn" onclick="startTest('test2.html')">Test 2</button>
-<button class="test-btn" onclick="startTest('test3.html')">Test 3</button>
-
-
+<h1>Your Tests</h1>
+<div id="testList"></div>
+<script src="script.js"></script>
 <script>
-function startTest(page) {
-window.location.href = page;
-}
+loadTestList();
 </script>
 </body>
 </html>
