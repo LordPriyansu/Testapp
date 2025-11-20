@@ -1,69 +1,84 @@
-let timerInterval;
+/ ================= ADMIN FEATURES =================
+let name=document.getElementById("testName").value;
+if(!name){alert("Enter test name");return;}
+localStorage.setItem(name,JSON.stringify([]));
+alert("Test created");
+loadAdminTestList();
+}
 
 
-function loadTest(questions){
-const container = document.getElementById("testContainer");
-questions.forEach((q, index) => {
-const div = document.createElement("div");
-div.className = "question";
-div.innerHTML = `<b>Q${index+1}: ${q.question}</b><br>`;
-q.options.forEach(opt => {
-div.innerHTML += `<input type='radio' name='q${index}' value='${opt}'> ${opt}<br>`;
-});
-container.appendChild(div);
+function loadAdminTestList(){
+let select=document.getElementById("testSelect");
+if(!select) return;
+select.innerHTML="";
+for(let k in localStorage){
+if(typeof localStorage[k]==="string" && k!="result")
+select.innerHTML+=`<option>${k}</option>`;
+}
+}
+
+
+function addQuestion(){
+let t=document.getElementById("testSelect").value;
+let q=document.getElementById("qText").value;
+let o1=opt1.value,o2=opt2.value,o3=opt3.value,o4=opt4.value;
+let ans=correct.value;
+if(!q||!o1||!o2||!o3||!o4||!ans){alert("Fill all fields");return;}
+let arr=JSON.parse(localStorage.getItem(t));
+arr.push({q:q,opt:[o1,o2,o3,o4],ans:ans});
+localStorage.setItem(t,JSON.stringify(arr));
+alert("Question Added");
+}
+
+
+// ================= HOME PAGE =================
+function loadTestList(){
+let div=document.getElementById("testList");
+for(let k in localStorage){
+if(k!="result")
+div.innerHTML+=`<button onclick="openTest('${k}')">${k}</button><br>`;
+}
+}
+function openTest(name){
+localStorage.setItem("selectedTest",name);
+window.location="test.html";
+}
+
+
+// ================= TEST PAGE =================
+function loadSelectedTest(){
+let name=localStorage.getItem("selectedTest");
+testTitle.innerHTML=name;
+let data=JSON.parse(localStorage.getItem(name));
+window.questions=data;
+data.forEach((q,i)=>{
+testContainer.innerHTML += `<div class='question'><b>Q${i+1}: ${q.q}</b><br>
+${q.opt.map(o=>`<input type='radio' name='q${i}' value='${o}'> ${o}<br>`).join('')}</div>`;
 });
 }
 
 
 function submitTest(){
-const q = window.questions;
-
-
-let score = 0;
-let details = [];
-
-
-q.forEach((ques, i) => {
-const selected = document.querySelector(`input[name="q${i}"]:checked`);
-const selectedValue = selected ? selected.value : "None";
-const correct = selectedValue === ques.answer;
-if(correct) score++;
-
-
-details.push({
-question: ques.question,
-selected: selectedValue,
-answer: ques.answer,
-correct: correct
+let score=0;
+let details=[];
+window.questions.forEach((q,i)=>{
+let selected=document.querySelector(`input[name='q${i}']:checked`);
+let val=selected?selected.value:"None";
+if(val===q.ans) score++;
+details.push({q:q.q, selected:val, ans:q.ans, correct:val===q.ans});
 });
-});
-
-
-localStorage.setItem("resultData", JSON.stringify({
-score: score,
-total: q.length,
-details: details
-}));
-
-
-window.location.href = "result.html";
+localStorage.setItem("result",JSON.stringify({score:score,total:window.questions.length,details:details}));
+window.location="result.html";
 }
 
 
-function startTimer(minutes){
-let time = minutes * 60;
-const timer = document.getElementById("timer");
-
-
-timerInterval = setInterval(() => {
-const mins = Math.floor(time / 60);
-const secs = time % 60;
-timer.innerHTML = `Time Left: ${mins}:${secs.toString().padStart(2, '0')}`;
-if(time <= 0){
-clearInterval(timerInterval);
-alert("Time is up! Auto submitting.");
-submitTest();
-}
-time--;
-}, 1000);
+// ================= TIMER =================
+function startTimer(min){
+let t=min*60;
+let x=setInterval(()=>{
+let m=Math.floor(t/60),s=t%60;
+timer.innerHTML=`${m}:${s.toString().padStart(2,'0')}`;
+if(t<=0){clearInterval(x);submitTest();}
+t--;
+},1000);
 }
