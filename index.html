@@ -1,34 +1,36 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TestApp Login</title>
-    <style>
-        body { font-family: Arial; text-align: center; margin-top: 100px; }
-        input { padding: 10px; margin: 5px; width: 200px; }
-        button { padding: 10px 20px; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login - TestApp</title>
+<style>
+body { font-family: Arial; text-align: center; margin-top: 100px; }
+input { padding: 10px; margin: 5px; width: 250px; }
+button { padding: 10px 20px; cursor: pointer; }
+</style>
 </head>
 <body>
-    <h1>Welcome to TestApp</h1>
-    <p>Login to start your test</p>
-    <input type="text" id="username" placeholder="Username"><br>
-    <input type="password" id="password" placeholder="Password"><br>
-    <button onclick="login()">Login</button>
+<h1>TestApp</h1>
+<p>Login to continue</p>
 
-    <script>
-        function login() {
-            const user = document.getElementById('username').value;
-            const pass = document.getElementById('password').value;
 
-            // Set your username & password here
-            if(user === "gfuser" && pass === "1234") {
-                window.location.href = "test.html";
-            } else {
-                alert("Wrong username or password!");
-            }
-        }
-    </script>
+<input type="text" id="username" placeholder="Username"><br>
+<input type="password" id="password" placeholder="Password"><br>
+<button onclick="login()">Login</button>
+
+
+<script>
+function login() {
+const user = document.getElementById("username").value;
+const pass = document.getElementById("password").value;
+
+
+if(user === "gfuser" && pass === "1234") {
+window.location.href = "home.html";
+} else {
+alert("Wrong username or password!");
+}
+}
+</script>
 </body>
 </html>
