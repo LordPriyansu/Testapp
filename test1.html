@@ -20,14 +20,14 @@ button { padding: 10px 20px; }
 
 <script src="script.js"></script>
 <script>
-const questions = [
+window.questions = [
 {question: "What is 2+2?", options: ["2","3","4","5"], answer: "4"},
 {question: "Capital of India?", options: ["Delhi","Mumbai","Kolkata","Chennai"], answer: "Delhi"},
 {question: "Red Planet?", options: ["Earth","Mars","Jupiter","Venus"], answer: "Mars"}
 ];
 
 
-loadTest(questions);
+loadTest(window.questions);
 startTimer(5); // 5 minute timer
 </script>
 </body>
