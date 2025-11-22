@@ -13,14 +13,12 @@
 
 <h1>Admin Panel</h1>
 
-<!-- CREATE TEST -->
 <h3>Create New Test</h3>
 <input id="testName" placeholder="Test Name"><br>
 
-<!-- TIMER SELECTOR -->
 <select id="timerSelect">
   <option value="1">1 Minute</option>
-  <option value="5" selected>5 Minutes (Default)</option>
+  <option value="5" selected>5 Minutes</option>
   <option value="10">10 Minutes</option>
   <option value="15">15 Minutes</option>
   <option value="20">20 Minutes</option>
@@ -31,12 +29,10 @@
 
 <button onclick="createTest()">Create Test</button>
 
-<!-- DELETE TEST -->
 <h3>Delete Test</h3>
 <select id="deleteSelect"></select><br>
 <button onclick="deleteTest()" style="background:#ff4444;color:white;">Delete Test</button>
 
-<!-- ADD QUESTION -->
 <h3>Add Question</h3>
 <select id="testSelect"></select><br>
 
@@ -50,9 +46,7 @@
 <button onclick="addQuestion()">Add Question</button>
 
 <script src="script.js"></script>
-<script>
-  loadAdminTestList();
-</script>
+<script>loadAdminTestList();</script>
 
 </body>
 </html>
