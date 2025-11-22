@@ -5,9 +5,16 @@ const API_URL = "https://script.google.com/macros/s/AKfycbwQtSLfNJ3IISpeeNEvOwXR
 function createTest(){
  let name = testName.value.trim();
  if(!name){ alert("Enter test name"); return; }
- alert("Test Created (questions add karte hi backend save hoga)");
+
+ // save locally so dropdown me dikhe
+ let tests = JSON.parse(localStorage.getItem("tests") || "[]");
+ if(!tests.includes(name)) tests.push(name);
+ localStorage.setItem("tests", JSON.stringify(tests));
+
+ alert("Test Created");
  loadAdminTestList();
 }
+
 
 /* ADD QUESTION TO GOOGLE SHEET */
 function addQuestion(){
@@ -51,18 +58,22 @@ function deleteTest(){
 }
 
 /* LOAD TEST LIST */
-function loadTestList(){
- let div = document.getElementById("testList");
+function loadAdminTestList(){
+ let addSel = document.getElementById("testSelect");
+ let delSel = document.getElementById("deleteSelect");
 
- fetch(`${API_URL}?action=getTests`)
-   .then(r=>r.json())
-   .then(data=>{
-     div.innerHTML = "";
-     Object.keys(data).forEach(test=>{
-       div.innerHTML += `<button onclick="openTest('${test}')">${test}</button><br>`;
-     });
-   });
+ addSel.innerHTML = "";
+ delSel.innerHTML = "";
+
+ // load locally created test names
+ let tests = JSON.parse(localStorage.getItem("tests") || "[]");
+
+ tests.forEach(t=>{
+   addSel.innerHTML += `<option>${t}</option>`;
+   delSel.innerHTML += `<option>${t}</option>`;
+ });
 }
+
 
 function openTest(t){
  localStorage.setItem("selectedTest", t);
