@@ -1,66 +1,24 @@
-/* ===========================================
-      SCRIPT.JS — FINAL CLEAN VERSION
-=========================================== */
+/* BACKEND URL */
+const API_URL = "https://script.google.com/macros/s/AKfycbwQtSLfNJ3IISpeeNEvOwXRCUecqotJICBR8UT-8FWnFeJ_RUQxzgM_7wmDtD3H2SM/exec";
 
-// ========== CREATE TEST ==========
+/* CREATE TEST */
 function createTest(){
- let name = document.getElementById("testName").value.trim();
- let timer = document.getElementById("timerSelect").value;
-
- if(!name){
-   alert("Enter test name");
-   return;
- }
-
- // save empty question array
- localStorage.setItem(name, JSON.stringify([]));
-
- // save timer for test
- localStorage.setItem(name + "_timer", timer);
-
- alert("Test Created");
+ let name = testName.value.trim();
+ if(!name){ alert("Enter test name"); return; }
+ alert("Test Created (questions add karte hi backend save hoga)");
  loadAdminTestList();
 }
 
-// ========== LOAD TEST LISTS IN ADMIN ==========
-function loadAdminTestList(){
- let addSelect = document.getElementById("testSelect");
- let delSelect = document.getElementById("deleteSelect");
-
- if(addSelect) addSelect.innerHTML = "";
- if(delSelect) delSelect.innerHTML = "";
-
- // FIX: Use localStorage.key(i) to avoid length/clear/getItem
- for(let i = 0; i < localStorage.length; i++){
-   let k = localStorage.key(i);
-
-   // skip result and timer entries
-   if(k === "result") continue;
-   if(k.endsWith("_timer")) continue;
-
-   if(addSelect) addSelect.innerHTML += `<option>${k}</option>`;
-   if(delSelect) delSelect.innerHTML += `<option>${k}</option>`;
- }
-}
-
-// ========== DELETE TEST ==========
-function deleteTest(){
- let t = document.getElementById("deleteSelect").value;
- if(!t) return;
-
- if(confirm(`Delete test: ${t}?`)){
-   localStorage.removeItem(t);         // remove questions
-   localStorage.removeItem(t + "_timer"); // remove timer
-   alert("Test Deleted");
-   loadAdminTestList();
- }
-}
-
-// ========== ADD QUESTION ==========
+/* ADD QUESTION TO GOOGLE SHEET */
 function addQuestion(){
  let t = testSelect.value;
  let q = qText.value;
- let o1 = opt1.value, o2 = opt2.value, o3 = opt3.value, o4 = opt4.value;
+ let timer = timerSelect.value;
+
+ let o1 = opt1.value;
+ let o2 = opt2.value;
+ let o3 = opt3.value;
+ let o4 = opt4.value;
  let ans = correct.value;
 
  if(!q||!o1||!o2||!o3||!o4||!ans){
@@ -68,72 +26,90 @@ function addQuestion(){
    return;
  }
 
- let arr = JSON.parse(localStorage.getItem(t));
- arr.push({ q:q, opt:[o1,o2,o3,o4], ans:ans });
- localStorage.setItem(t, JSON.stringify(arr));
+ let url =
+ `${API_URL}?action=addQuestion&test=${encodeURIComponent(t)}&timer=${timer}&q=${encodeURIComponent(q)}&o1=${encodeURIComponent(o1)}&o2=${encodeURIComponent(o2)}&o3=${encodeURIComponent(o3)}&o4=${encodeURIComponent(o4)}&ans=${encodeURIComponent(ans)}`;
 
- alert("Question Added");
+ fetch(url)
+   .then(r=>r.text())
+   .then(()=>alert("Question Added ✔"))
+   .catch(()=>alert("Error adding question"));
 }
 
-// ========== HOME PAGE TEST LIST ==========
-function loadTestList(){
- let div = document.getElementById("testList");
- if(!div) return;
+/* DELETE TEST */
+function deleteTest(){
+ let t = deleteSelect.value;
+ if(!t) return;
 
- div.innerHTML = "";
-
- for(let i = 0; i < localStorage.length; i++){
-   let k = localStorage.key(i);
-
-   if(k === "result" || k.endsWith("_timer")) continue;
-
-   div.innerHTML += `<button onclick="openTest('${k}')">${k}</button><br>`;
+ if(confirm(`Delete test: ${t}?`)){
+   fetch(`${API_URL}?action=deleteTest&test=${encodeURIComponent(t)}`)
+     .then(r=>r.text())
+     .then(()=>{
+       alert("Deleted ✔");
+       loadAdminTestList();
+     });
  }
 }
 
-function openTest(name){
- localStorage.setItem("selectedTest", name);
- window.location = "test.html";
+/* LOAD TEST LIST */
+function loadTestList(){
+ let div = document.getElementById("testList");
+
+ fetch(`${API_URL}?action=getTests`)
+   .then(r=>r.json())
+   .then(data=>{
+     div.innerHTML = "";
+     Object.keys(data).forEach(test=>{
+       div.innerHTML += `<button onclick="openTest('${test}')">${test}</button><br>`;
+     });
+   });
 }
 
-// ========== LOAD TEST QUESTIONS ==========
+function openTest(t){
+ localStorage.setItem("selectedTest", t);
+ window.location="test.html";
+}
+
+/* LOAD QUESTIONS FOR TEST */
 function loadSelectedTest(){
  let name = localStorage.getItem("selectedTest");
- if(!name) return;
 
- testTitle.innerHTML = name;
+ fetch(`${API_URL}?action=getTests`)
+   .then(r=>r.json())
+   .then(data=>{
+     let test = data[name];
+     window.questions = test.questions;
+     window.testTimer = parseInt(test.timer);
 
- let data = JSON.parse(localStorage.getItem(name));
- window.questions = data;
+     testTitle.innerHTML = name;
 
- // load timer
- window.testTimer = parseInt(localStorage.getItem(name + "_timer")) || 5;
+     test.questions.forEach((q,i)=>{
+       testContainer.innerHTML += `
+        <div class="question">
+         <b>Q${i+1}:</b> ${q.q}<br>
+         ${q.opt.map(o=>`<input type='radio' name='q${i}' value='${o}'> ${o}<br>`).join("")}
+        </div>`;
+     });
 
- data.forEach((q,i)=>{
-   testContainer.innerHTML += `
-   <div class='question'>
-     <b>Q${i+1}: ${q.q}</b><br>
-     ${q.opt.map(o=>`<input type='radio' name='q${i}' value='${o}'> ${o}<br>`).join("")}
-   </div>`;
- });
+     startTimer(window.testTimer);
+   });
 }
 
-// ========== SUBMIT TEST ==========
+/* SUBMIT TEST (NEGATIVE MARKING) */
 function submitTest(){
- let score = 0, details = [];
+ let score=0, details=[];
 
- window.questions.forEach((q,i)=>{
-   let sel = document.querySelector(`input[name='q${i}']:checked`);
+ questions.forEach((q,i)=>{
+   let sel=document.querySelector(`input[name='q${i}']:checked`);
    let val = sel ? sel.value : "None";
 
    if(val === q.ans) score += 1;
    else if(val !== "None") score -= 0.33;
 
-   details.push({ 
-     q: q.q, 
-     selected: val, 
-     ans: q.ans, 
-     correct: (val === q.ans) 
+   details.push({
+     q:q.q,
+     selected:val,
+     ans:q.ans,
+     correct:(val===q.ans)
    });
  });
 
@@ -141,19 +117,20 @@ function submitTest(){
 
  localStorage.setItem("result", JSON.stringify({
    score: score.toFixed(2),
-   total: window.questions.length,
+   total: questions.length,
    details: details
  }));
 
- window.location = "result.html";
+ window.location="result.html";
 }
-// ========== TIMER ==========
+
+/* TIMER */
 function startTimer(min){
  let t = min * 60;
 
  let x = setInterval(()=>{
-   let m = Math.floor(t/60);
-   let s = t % 60;
+   let m=Math.floor(t/60);
+   let s=t%60;
 
    timer.innerHTML = `${m}:${s.toString().padStart(2,'0')}`;
 
@@ -161,7 +138,24 @@ function startTimer(min){
      clearInterval(x);
      submitTest();
    }
-
    t--;
  },1000);
+}
+
+/* LOAD ADMIN TEST LIST */
+function loadAdminTestList(){
+ let addSel=document.getElementById("testSelect");
+ let delSel=document.getElementById("deleteSelect");
+
+ fetch(`${API_URL}?action=getTests`)
+   .then(r=>r.json())
+   .then(data=>{
+     addSel.innerHTML="";
+     delSel.innerHTML="";
+
+     Object.keys(data).forEach(t=>{
+       addSel.innerHTML += `<option>${t}</option>`;
+       delSel.innerHTML += `<option>${t}</option>`;
+     });
+   });
 }
