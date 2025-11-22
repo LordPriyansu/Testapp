@@ -4,9 +4,9 @@
 <meta charset="UTF-8">
 <title>Results</title>
 <style>
-body{font-family:Arial; padding:20px;}
-.correct{color:green;}
-.wrong{color:red;}
+ body{font-family:Arial; padding:20px;}
+ .correct{color:green;}
+ .wrong{color:red;}
 </style>
 </head>
 <body>
@@ -14,15 +14,14 @@ body{font-family:Arial; padding:20px;}
 <div id="score"></div>
 <div id="details"></div>
 
-
 <script>
 let r = JSON.parse(localStorage.getItem("result"));
 score.innerHTML = `<h2>Score: ${r.score}/${r.total}</h2>`;
 let html = "";
 r.details.forEach((q,i)=>{
-html += `<p><b>Q${i+1}: ${q.q}</b><br>
-Your Answer: <span class='${q.correct?"correct":"wrong"}'>${q.selected}</span><br>
-Correct Answer: <b>${q.ans}</b></p><hr>`;
+ html += `<p><b>Q${i+1}: ${q.q}</b><br>
+ Your Answer: <span class='${q.correct?"correct":"wrong"}'>${q.selected}</span><br>
+ Correct Answer: <b>${q.ans}</b></p><hr>`;
 });
 details.innerHTML = html;
 </script>
